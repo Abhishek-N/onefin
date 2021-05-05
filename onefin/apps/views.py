@@ -8,9 +8,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework.reverse import reverse
 
 # Create your views here.
+
+
 class RegistrationAPIViewset(viewsets.ViewSet):
 
     queryset = User.objects.all()
@@ -44,9 +46,21 @@ class MovieAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        breakpoint()
-        movies = requests.get('https://demo.credy.in/api/v1/maya/movies/',
-                              auth=(settings.API_USERNAME,
-                                    settings.API_PASSWORD)
-                              )
-        return Response({"response": movies})
+        page = "?page=" + \
+            request.GET.get('page') if request.GET.get('page') else ''
+        cur_url = reverse('api:movie_api', request=request)
+        response = requests.get('https://demo.credy.in/api/v1/maya/movies/' +
+                                page,
+                                auth=(settings.API_USERNAME,
+                                      settings.API_PASSWORD)
+                                )
+        response_obj = response.json()
+        response_obj['next'] = response_obj['next'].replace(
+            'https://demo.credy.in/api/v1/maya/movies/', cur_url) \
+            if 'next' in response_obj and response_obj['next'] \
+            else None
+        response_obj['previous'] = response_obj['previous'].replace(
+            'https://demo.credy.in/api/v1/maya/movies/', cur_url) \
+            if 'previous' in response_obj and response_obj['previous'] \
+            else None
+        return Response(response_obj)
