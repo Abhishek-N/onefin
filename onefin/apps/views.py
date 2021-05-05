@@ -1,4 +1,5 @@
 from onefin.apps.serializers import RegistrationSerializer
+from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -13,13 +14,16 @@ class RegistrationAPIView(viewsets.ViewSet):
 
     def create(self, request):
         user = request.data
-        serializer = self.serializer(data=user)
-             
-        if serializer.is_valid():
-            user_obj = serializer.save()
-            token, created = Token.objects.get_or_create(user=user_obj)
-            return Response({'token': token.key}, status=status.HTTP_201_CREATED) 
+        cur_user = authenticate(request=request, username=user.get('username'), password=user.get('password'))
+        if not cur_user:
+            serializer = self.serializer(data=user)
+            if serializer.is_valid():
+                user_obj = serializer.save()
+                token, created = Token.objects.get_or_create(user=user_obj)
+                return Response({'token': token.key}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"is_success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response({"is_success": False, "error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+            token, created = Token.objects.get_or_create(user=cur_user)
+            return Response({'token': token.key}, status=status.HTTP_200_OK)
         
