@@ -1,13 +1,17 @@
+from rest_framework.views import APIView
 from onefin.apps.serializers import RegistrationSerializer
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_framework import viewsets, status
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated
+
 
 
 # Create your views here.
-class RegistrationAPIView(viewsets.ViewSet):
+class RegistrationAPIViewset(viewsets.ViewSet):
 
     queryset = User.objects.all()
     serializer = RegistrationSerializer
@@ -27,3 +31,10 @@ class RegistrationAPIView(viewsets.ViewSet):
             token, created = Token.objects.get_or_create(user=cur_user)
             return Response({'token': token.key}, status=status.HTTP_200_OK)
         
+
+class MovieAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"response": "working"})

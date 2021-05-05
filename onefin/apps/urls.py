@@ -1,4 +1,4 @@
-from onefin.apps.views import RegistrationAPIView
+from onefin.apps.views import MovieAPIView, RegistrationAPIViewset
 from django.urls import path
 from rest_framework import routers
 
@@ -8,6 +8,8 @@ app_name = "apps"
 # The API URLs are now determined automatically by the router.
 
 router = routers.SimpleRouter()
-router.register('register', RegistrationAPIView)
+router.register('api/register', RegistrationAPIViewset)
 
-urlpatterns = router.urls
+urlpatterns = [path('movies/', MovieAPIView.as_view()),]
+
+urlpatterns += router.urls
