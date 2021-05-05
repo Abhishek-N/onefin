@@ -1,9 +1,10 @@
+from onefin.apps.models import Collections
 import requests
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from onefin.apps.serializers import RegistrationSerializer
-from rest_framework import status, viewsets
+from onefin.apps.serializers import CollectionSerialzer, RegistrationSerializer
+from rest_framework import serializers, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -64,3 +65,17 @@ class MovieAPIView(APIView):
             if 'previous' in response_obj and response_obj['previous'] \
             else None
         return Response(response_obj)
+
+
+class CollectionsViewSet(viewsets.ViewSet):
+
+    permission_classes = [IsAuthenticated]
+    serializer = CollectionSerialzer
+    queryset = Collections.objects.all()
+
+    def create(self, request):
+        collection = self.serializer(data=request.data)
+        collection.is_valid(raise_exception=True)
+        created_collection = collection.save(user=request.user)
+
+        return Response({'collection_uuid': created_collection.uuid})

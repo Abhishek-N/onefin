@@ -1,10 +1,10 @@
+from onefin.apps.models import Collections
 from django.contrib.auth.models import User
-from django.db import models
-from rest_framework.authtoken.models import Token
 from rest_framework import serializers
 
+
 class RegistrationSerializer(serializers.ModelSerializer):
-   
+
     class Meta:
         model = User
         fields = ["username", "password"]
@@ -14,4 +14,13 @@ class RegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         user.set_password(validated_data.get('password'))
         return user
-       
+
+
+class CollectionSerialzer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Collections
+        exclude = ['user']
+
+    def create(self, validated_data):
+        return Collections.objects.create(**validated_data)
