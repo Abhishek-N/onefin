@@ -21,7 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = '#!wx+b9q$^j=fgdz#qj_vwnb3fz#zd7_e@8qtl738bf=lkegd&'
 
 API_USERNAME = config('API_USERNAME')
 API_PASSWORD = config('API_PASSWORD')
