@@ -16,7 +16,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return user
 
 
-class CollectionSerialzer(serializers.ModelSerializer):
+class CollectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collections
@@ -26,8 +26,8 @@ class CollectionSerialzer(serializers.ModelSerializer):
         return Collections.objects.create(**validated_data)
 
 
-class CollectionListSerialzer(serializers.ModelSerializer):
+class ListCollectionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Collections
-        exclude = ['user']
+        exclude = ['user', 'movies', ]

@@ -11,15 +11,13 @@ app_name = "apps"
 
 router = routers.SimpleRouter()
 router.register('api/register', RegistrationAPIViewset)
-router.register('collection', CollectionsViewSet)
+router.register('collection', CollectionsViewSet, basename='collections')
 
 urlpatterns = [
     path('movies/',
          MovieAPIView.as_view(),
          name='movie_api'
          ),
-    #     path('collection/<int:collection_id>/',
-    #          CollectionAPIView.as_view())
 ]
 
 urlpatterns += router.urls
