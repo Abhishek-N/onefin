@@ -1,17 +1,17 @@
-from onefin.apps.models import Collections
 import requests
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from onefin.apps.serializers import CollectionSerialzer, RegistrationSerializer
-from rest_framework import serializers, status, viewsets
+from onefin.apps.models import Collections
+from onefin.apps.serializers import (CollectionSerialzer,
+                                     RegistrationSerializer)
+from rest_framework import status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.reverse import reverse
-
-# Create your views here.
+from rest_framework.views import APIView
+from rest_framework.mixins import UpdateModelMixin
 
 
 class RegistrationAPIViewset(viewsets.ViewSet):
@@ -67,7 +67,7 @@ class MovieAPIView(APIView):
         return Response(response_obj)
 
 
-class CollectionsViewSet(viewsets.ViewSet):
+class CollectionsViewSet(viewsets.GenericViewSet, UpdateModelMixin):
 
     permission_classes = [IsAuthenticated]
     serializer = CollectionSerialzer
@@ -79,3 +79,38 @@ class CollectionsViewSet(viewsets.ViewSet):
         created_collection = collection.save(user=request.user)
 
         return Response({'collection_uuid': created_collection.uuid})
+
+    def update(self, request,  *args, **kwargs):
+        try:
+            collection = self.get_object()
+            data_to_update = request.data
+            if collection.user == request.user:
+                updated_collection = self.serializer(
+                    collection, data=data_to_update, partial=True)
+                updated_collection.is_valid(raise_exception=True)
+                updated_collection.save()
+                return Response(updated_collection.data,
+                                status=status.HTTP_202_ACCEPTED)
+            else:
+                raise Exception('Unauthorised')
+        except Exception as e:
+            return Response({'is_success': False, 'error': e.args[0]},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+# class CollectionAPIView(APIView):
+
+#     permission_classes = [IsAuthenticated]
+#     serializer = CollectionListSerialzer
+
+#     def get(self, request):
+#         try:
+#             collection_id = request.query_params.get('collection_id')
+#         except Exception as e:
+#             return Response({'sts': False, 'msg': 'Collection doesn\'t \
+#                             'code': str(e.args[0])})
+#         collection = CollectionListSerialzer(data=request.data)
+#         collection.is_valid(raise_exception=True)
+#         collection_data = collection.save(user=request.user)
+
+#         return Response(collection_data)

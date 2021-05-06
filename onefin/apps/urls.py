@@ -1,8 +1,8 @@
 from os import name
 
 from django.urls import path
-from onefin.apps.views import (CollectionsViewSet, MovieAPIView,
-                               RegistrationAPIViewset)
+from onefin.apps.views import (CollectionsViewSet,
+                               MovieAPIView, RegistrationAPIViewset)
 from rest_framework import routers
 
 app_name = "apps"
@@ -17,7 +17,9 @@ urlpatterns = [
     path('movies/',
          MovieAPIView.as_view(),
          name='movie_api'
-         )
+         ),
+    #     path('collection/<int:collection_id>/',
+    #          CollectionAPIView.as_view())
 ]
 
 urlpatterns += router.urls

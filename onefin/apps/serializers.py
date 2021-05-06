@@ -1,5 +1,5 @@
-from onefin.apps.models import Collections
 from django.contrib.auth.models import User
+from onefin.apps.models import Collections
 from rest_framework import serializers
 
 
@@ -24,3 +24,10 @@ class CollectionSerialzer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return Collections.objects.create(**validated_data)
+
+
+class CollectionListSerialzer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Collections
+        exclude = ['user']
